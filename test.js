@@ -37,13 +37,13 @@ describe('dataServices getAllQueryCombosFromQuery', function() {
 });
 
 
-describe.only('dataServices getInstrumentByQuery', function() {
+describe.only('dataServices getDataByQuery', function() {
   it('method should be a function', function() {
-    assert.typeOf(dataServices.getInstrumentByQuery, 'function');
+    assert.typeOf(dataServices.getDataByQuery, 'function');
   });
   it('given single word resolves query should resolve promise to valid data', function(done) {
   	var query = "apple";
-  	dataServices.getInstrumentByQuery(query).then(function(response) {
+  	dataServices.getDataByQuery(query).then(function(response) {
 		console.log("final data = " + response.data);
   		assert(response.data === "apple data");
     	done();
@@ -54,7 +54,7 @@ describe.only('dataServices getInstrumentByQuery', function() {
   });
   it('given first word resolves query should resolve promise to valid data', function(done) {
   	var query = "apple computer inc";
-  	dataServices.getInstrumentByQuery(query).then(function(response) {
+  	dataServices.getDataByQuery(query).then(function(response) {
 		console.log("final data = " + response.data);
   		assert(response.data === "apple data");
     	done();
@@ -65,12 +65,19 @@ describe.only('dataServices getInstrumentByQuery', function() {
   });
   it('given mid word resolves query should resolve promise to valid data', function(done) {
   	var query = "chiptole mexican grill";
-  	dataServices.getInstrumentByQuery(query).then(function(response) {
+  	dataServices.getDataByQuery(query).then(function(response) {
 		console.log("final data = " + response.data);
   		assert(response.data === "cmg data");
     	done();
 	}, function(error) {
 	    assert.fail(error);
+	    done();
+	});
+  });
+  it('given unmatched query should reject promise to expected error', function(done) {
+  	var query = "plankton silver oranges";
+  	dataServices.getDataByQuery(query).catch(function(error) {
+	    assert(error === "no data");
 	    done();
 	});
   });

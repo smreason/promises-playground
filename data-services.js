@@ -18,34 +18,34 @@ function fakeGetData(query) {
 			resolve({data: "cmg data"});
 		}
 		else {
-			reject(null);
+			reject("no data");
 		}
 	});
 }
 
-function chainPromisesOfQueryArrayUntilFullfilment(queries, promiseReturningQueryFn, fullfillmentCondition) {
+function chainPromisesOfQueryArrayUntilFullfilment(queries, promiseReturningDataFn, fullfillmentCondition) {
 	return queries.reduce(function(promise, query) {
 		return promise.then(function(response) {
-			console.log("Promise response = " + response);
+			console.log("Promise response = " + JSON.stringify(response));
 			console.log("Next query = " + query);
 			if (!fullfillmentCondition(response)) {
-				return promiseReturningQueryFn(query);
+				return promiseReturningDataFn(query);
 			}
 			else {
-				console.log("Have data, so passing it on as " + response);
+				console.log("Have data, so chaining it on as " + JSON.stringify(response));
 				return response;
 			}
 		},
 		function(err) {
 			console.log("Rejected, now trying " + query);
-			return promiseReturningQueryFn(query);
+			return promiseReturningDataFn(query);
 		});
 	}, Promise.resolve());
 }
 
 module.exports = {
-    getInstrumentByQuery: function(query) {
-    	var queries = this.getAllQueryCombosFromQuery(query)
+    getDataByQuery: function(query) {
+    	var queries = this.getAllQueryCombosFromQuery(query);
     	console.log("Starting with " + queries.length + " queries: " + queries.join(", "));
     	return chainPromisesOfQueryArrayUntilFullfilment(queries, fakeGetData, function(response) {
     		return response && response.data;
@@ -61,8 +61,6 @@ module.exports = {
     		queryArray.pop()
     		query = queryArray.join(" ");
     	}
-
     	return queries;
     }
-
-}
+};
